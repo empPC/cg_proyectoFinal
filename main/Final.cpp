@@ -29,7 +29,7 @@ unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
 GLFWmonitor *monitors;
 void getResolution(void);
-// camera
+//Camara -------------------------------------------------------------------------------------------------------------------------
 Camera camera(glm::vec3(-150.0f, 40.0f, 210.0f));
 float MovementSpeed = 0.1f;
 float lastX = SCR_WIDTH / 2.0f;
@@ -40,12 +40,10 @@ const int FPS = 60;
 const int LOOP_TIME = 1000 / FPS; // = 16 milisec // 1000 millisec == 1 sec
 double	deltaTime = 0.0f,
 		lastFrame = 0.0f;
-//Lighting
+//Luces -------------------------------------------------------------------------------------------------------------------------
 glm::vec3 colores(0.0f, 0.0f, 0.0f);
 double myVariable = 0.0;
-
-//float x = 0.0f;
-//float y = 0.0f;
+//Variables -------------------------------------------------------------------------------------------------------------------------
 float	movAuto_x = 210.0f,
 		movAuto_y = 0.0f,
 		movAuto_z = 30.0f,
@@ -63,14 +61,14 @@ bool	animacion = false,
 		recorrido4 = false,
 		recorrido5 = false;
 
-//Keyframes (Manipulación y dibujo)
+//Keyframes -------------------------------------------------------------------------------------------------------------------------
 float	posX = 0.0f,
+		posX2 = 0.0f,
 		posY = 0.0f,
 		posZ = 0.0f,
 		rotRodIzq = 0.0f,
 		giroMonito = 0.0f,
 		movBrazoIzq = 0.0f,
-		movCabeza = 0.0f,
 		movTorzo = 0.0f;
 float	incX = 0.0f,
 		incY = 0.0f,
@@ -78,14 +76,12 @@ float	incX = 0.0f,
 		rotInc = 0.0f,
 		giroMonitoInc = 0.0f,
 		movBrazoIzqInc = 0.0f,
-		movCabezaInc = 0.0f,
 		movTorzoInc = 0.0f;
 
-#define MAX_FRAMES 9
+#define MAX_FRAMES 22
 int i_max_steps = 60;
 int i_curr_steps = 0;
 typedef struct _frame{
-	//Variables para GUARDAR Key Frames
 	float posX;		//Variable para PosicionX
 	float posY;		//Variable para PosicionY
 	float posZ;		//Variable para PosicionZ
@@ -96,34 +92,38 @@ typedef struct _frame{
 }FRAME;
 
 FRAME KeyFrame[MAX_FRAMES];
-int FrameIndex = 0;			//introducir datos
+
+int FrameIndex = 22;
 bool play = false;
 int playIndex = 0;
 int indice = 1;
 
 void saveFrame(void){
 	std::cout << "Frame Index = " << FrameIndex << std::endl;
-
 	KeyFrame[FrameIndex].posX = posX;
 	KeyFrame[FrameIndex].posY = posY;
 	KeyFrame[FrameIndex].posZ = posZ;
-
 	KeyFrame[FrameIndex].rotRodIzq = rotRodIzq;
 	KeyFrame[FrameIndex].giroMonito = giroMonito;
-
 	KeyFrame[FrameIndex].movBrazoIzq = movBrazoIzq;
 	KeyFrame[FrameIndex].movTorzo = movTorzo;
-
+	
+	std::cout << "X: " << KeyFrame[FrameIndex].posX << std::endl;
+	std::cout << "Y: " << KeyFrame[FrameIndex].posY << std::endl;
+	std::cout << "Z: " << KeyFrame[FrameIndex].posZ << std::endl;
+	std::cout << "Torzo: " << KeyFrame[FrameIndex].movTorzo << std::endl;
+	std::cout << "Brazo: " << KeyFrame[FrameIndex].movBrazoIzq << std::endl;
+	std::cout << "Pie: " << KeyFrame[FrameIndex].rotRodIzq << std::endl;
+	std::cout << "Giro: " << KeyFrame[FrameIndex].giroMonito << std::endl;
+	
 	FrameIndex++;
 }
 void resetElements(void){
 	posX = KeyFrame[0].posX;
 	posY = KeyFrame[0].posY;
 	posZ = KeyFrame[0].posZ;
-
 	rotRodIzq = KeyFrame[0].rotRodIzq;
 	giroMonito = KeyFrame[0].giroMonito;
-
 	movBrazoIzq = KeyFrame[0].movBrazoIzq;
 	movTorzo = KeyFrame[0].movTorzo;
 }
@@ -134,18 +134,16 @@ void interpolation(void){
 
 	rotInc = (KeyFrame[playIndex + 1].rotRodIzq - KeyFrame[playIndex].rotRodIzq) / i_max_steps;
 	giroMonitoInc = (KeyFrame[playIndex + 1].giroMonito - KeyFrame[playIndex].giroMonito) / i_max_steps;
-
 	movBrazoIzqInc = (KeyFrame[playIndex + 1].movBrazoIzq - KeyFrame[playIndex].movBrazoIzq) / i_max_steps;
 	movTorzoInc = (KeyFrame[playIndex + 1].movTorzo - KeyFrame[playIndex].movTorzo) / i_max_steps;
 }
+//Funciones -------------------------------------------------------------------------------------------------------------------------
 void animate(void){
 	colores.x = 1 * cos(myVariable);
 	colores.y = 1 * sin(myVariable);
 	colores.z = 1 * cos(myVariable);
-
 	//lightPosition.x = 400 * cos(myVariable);
 	//lightPosition.z = 400 * sin(myVariable);
-
 	myVariable += 0.06;
 
 	if (play){
@@ -163,13 +161,15 @@ void animate(void){
 		}
 		else{
 			//Draw animation
+			if (i_curr_steps < 10) {
+				posX2 += (incX*0.6f);
+			}
 			posX += incX;
 			posY += incY;
 			posZ += incZ;
 
 			rotRodIzq += rotInc;
 			giroMonito += giroMonitoInc;
-
 			movBrazoIzq += movBrazoIzqInc;
 			movTorzo += movTorzoInc;
 
@@ -265,7 +265,7 @@ void animate(void){
 		}
 	}
 }
-
+//Main -------------------------------------------------------------------------------------------------------------------------
 void getResolution(){
 	const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	SCR_WIDTH = mode->width;
@@ -311,37 +311,221 @@ int main()
 	Skybox skybox = Skybox(faces);
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
-
-	// load models
+	//Carga de modelos -------------------------------------------------------------------------------------------------------------------------
 	Model piso("resources/objects/piso/piso.obj");
-	/*Model piernaDer("resources/objects/nuevos/modelos/br_pd.obj");
-	Model piernaIzq("resources/objects/nuevos/modelos/br_pi.obj");
-	Model torso("resources/objects/nuevos/modelos/br_cuerpo.obj");
-	Model brazoDer("resources/objects/nuevos/modelos/br_bd.obj");
-	Model brazoIzq("resources/objects/nuevos/modelos/br_bi.obj");
-	
+
+	Model piernaDer("resources/objects/nuevos/modelos/st_pd.obj");
+	Model piernaIzq("resources/objects/nuevos/modelos/st_pi.obj");
+	Model torso("resources/objects/nuevos/modelos/st_cuerpo.obj");
+	Model brazoDer("resources/objects/nuevos/modelos/st_bd.obj");
+	Model brazoIzq("resources/objects/nuevos/modelos/st_bi.obj");
+
+	Model piernaDer2("resources/objects/nuevos/modelos/br_pd.obj");
+	Model piernaIzq2("resources/objects/nuevos/modelos/br_pi.obj");
+	Model torso2("resources/objects/nuevos/modelos/br_cuerpo.obj");
+	Model brazoDer2("resources/objects/nuevos/modelos/br_bd.obj");
+	Model brazoIzq2("resources/objects/nuevos/modelos/br_bi.obj");
+	/*
 	Model carro("resources/objects/lambo/carroceria.obj");
 	Model llanta("resources/objects/lambo/Wheel.obj");
-	*/
+	Model pino("resources/objects/nuevos/casita/pino.obj");*/
 	Model cascaron("resources/objects/nuevos/casita/cascaron.obj");
-	Model pino("resources/objects/nuevos/casita/pino.obj");
-	
-	//Inicialización de KeyFrames
-	for (int i = 0; i < MAX_FRAMES; i++){
-		KeyFrame[i].posX = 0;
-		KeyFrame[i].posY = 0;
-		KeyFrame[i].posZ = 0;
-		KeyFrame[i].rotRodIzq = 0;
-		KeyFrame[i].giroMonito = 0;
-	}
+	Model escalera("resources/objects/nuevos/casita/escalera.obj");
 
-	// render loop
+
+	KeyFrame[0].posX = 0.0f;
+	KeyFrame[0].posY = 0.0f;
+	KeyFrame[0].posZ = 0.0f;
+	KeyFrame[0].movTorzo = 0.0f;
+	KeyFrame[0].movBrazoIzq = 0.0f;
+	KeyFrame[0].rotRodIzq = 0.0f;
+	KeyFrame[0].giroMonito = 0.0f;
+
+	KeyFrame[1].posX = 0.0f;
+	KeyFrame[1].posY = 0.0f;
+	KeyFrame[1].posZ = 18.0f;
+	KeyFrame[1].movTorzo = 0.0f;
+	KeyFrame[1].movBrazoIzq = -33.0f;
+	KeyFrame[1].rotRodIzq = 10.0f;
+	KeyFrame[1].giroMonito = 57.0f;
+
+	KeyFrame[2].posX = 33.0f;
+	KeyFrame[2].posY = 0.0f;
+	KeyFrame[2].posZ = 29.0f;
+	KeyFrame[2].movTorzo = 0.0f;
+	KeyFrame[2].movBrazoIzq = -69.0f;
+	KeyFrame[2].rotRodIzq = 16.0f;
+	KeyFrame[2].giroMonito = 73.0f;
+
+	KeyFrame[3].posX = 70.0f;
+	KeyFrame[3].posY = 0.0f;
+	KeyFrame[3].posZ = 32.0f;
+	KeyFrame[3].movTorzo = 0.0f;
+	KeyFrame[3].movBrazoIzq = 3.0f;
+	KeyFrame[3].rotRodIzq = -10.0f;
+	KeyFrame[3].giroMonito = 73.0f;
+
+	KeyFrame[4].posX = 104.0f;
+	KeyFrame[4].posY = 0.0f;
+	KeyFrame[4].posZ = 32.0f;
+	KeyFrame[4].movTorzo = 0.0f;
+	KeyFrame[4].movBrazoIzq = 66.0f;
+	KeyFrame[4].rotRodIzq = -25.0f;
+	KeyFrame[4].giroMonito = 73.0f;
+
+	KeyFrame[5].posX = 146.0f;
+	KeyFrame[5].posY = 0.0f;
+	KeyFrame[5].posZ = 54.0f;
+	KeyFrame[5].movTorzo = 0.0f;
+	KeyFrame[5].movBrazoIzq = -18.0f;
+	KeyFrame[5].rotRodIzq = 10.0f;
+	KeyFrame[5].giroMonito = 42.0f;
+
+	KeyFrame[6].posX = 189.0f;
+	KeyFrame[6].posY = 0.0f;
+	KeyFrame[6].posZ = 70.0f;
+	KeyFrame[6].movTorzo = 0.0f;
+	KeyFrame[6].movBrazoIzq = -60.0f;
+	KeyFrame[6].rotRodIzq = 20.0f;
+	KeyFrame[6].giroMonito = 42.0f;
+
+	KeyFrame[7].posX = 250.0f;
+	KeyFrame[7].posY = 0.0f;
+	KeyFrame[7].posZ = 101.0f;
+	KeyFrame[7].movTorzo = 0.0f;
+	KeyFrame[7].movBrazoIzq = 33.0f;
+	KeyFrame[7].rotRodIzq = -23.0f;
+	KeyFrame[7].giroMonito = 42.0f;
+
+	KeyFrame[8].posX = 307.0f;
+	KeyFrame[8].posY = 0.0f;
+	KeyFrame[8].posZ = 100.0f;
+	KeyFrame[8].movTorzo = 0.0f;
+	KeyFrame[8].movBrazoIzq = 72.0f;
+	KeyFrame[8].rotRodIzq = -33.0f;
+	KeyFrame[8].giroMonito = 35.0f;
+
+	KeyFrame[9].posX = 341.0f;
+	KeyFrame[9].posY = 0.0f;
+	KeyFrame[9].posZ = 133.0f;
+	KeyFrame[9].movTorzo = 0.0f;
+	KeyFrame[9].movBrazoIzq = -15.0f;
+	KeyFrame[9].rotRodIzq = 16.0f;
+	KeyFrame[9].giroMonito = 2.0f;
+
+	KeyFrame[10].posX = 341.0f;
+	KeyFrame[10].posY = 0.0f;
+	KeyFrame[10].posZ = 169.0f;
+	KeyFrame[10].movTorzo = 0.0f;
+	KeyFrame[10].movBrazoIzq = -60.0f;
+	KeyFrame[10].rotRodIzq = 24.0f;
+	KeyFrame[10].giroMonito = 2.0f;
+
+	KeyFrame[11].posX = 341.0f;
+	KeyFrame[11].posY = 0.0f;
+	KeyFrame[11].posZ = 202.0f;
+	KeyFrame[11].movTorzo = -4.0f;
+	KeyFrame[11].movBrazoIzq = 30.0f;
+	KeyFrame[11].rotRodIzq = -19.0f;
+	KeyFrame[11].giroMonito = 2.0f;
+
+	KeyFrame[12].posX = 341.0f;
+	KeyFrame[12].posY = 0.0f;
+	KeyFrame[12].posZ = 237.0f;
+	KeyFrame[12].movTorzo = -22.0f;
+	KeyFrame[12].movBrazoIzq = 78.0f;
+	KeyFrame[12].rotRodIzq = -30.0f;
+	KeyFrame[12].giroMonito = 2.0f;
+
+	KeyFrame[13].posX = 341.0f;
+	KeyFrame[13].posY = 0.0f;
+	KeyFrame[13].posZ = 277.0f;
+	KeyFrame[13].movTorzo = -46.0f;
+	KeyFrame[13].movBrazoIzq = -33.0f;
+	KeyFrame[13].rotRodIzq = 21.0f;
+	KeyFrame[13].giroMonito = 2.0f;
+
+	KeyFrame[14].posX = 341.0f;
+	KeyFrame[14].posY = 0.0f;
+	KeyFrame[14].posZ = 322.0f;
+	KeyFrame[14].movTorzo = -66.0f;
+	KeyFrame[14].movBrazoIzq = -66.0f;
+	KeyFrame[14].rotRodIzq = 29.0f;
+	KeyFrame[14].giroMonito = 2.0f;
+
+	KeyFrame[15].posX = 341.0f;
+	KeyFrame[15].posY = 0.0f;
+	KeyFrame[15].posZ = 363.0f;
+	KeyFrame[15].movTorzo = -92.0f;
+	KeyFrame[15].movBrazoIzq = 27.0f;
+	KeyFrame[15].rotRodIzq = -30.0f;
+	KeyFrame[15].giroMonito = 2.0f;
+
+	KeyFrame[16].posX = 341.0f;
+	KeyFrame[16].posY = 0.0f;
+	KeyFrame[16].posZ = 407.0f;
+	KeyFrame[16].movTorzo = -104.0f;
+	KeyFrame[16].movBrazoIzq = -33.0f;
+	KeyFrame[16].rotRodIzq = 24.0f;
+	KeyFrame[16].giroMonito = -45.0f;
+
+	KeyFrame[17].posX = 264.0f;
+	KeyFrame[17].posY = 0.0f;
+	KeyFrame[17].posZ = 408.0f;
+	KeyFrame[17].movTorzo = -126.0f;
+	KeyFrame[17].movBrazoIzq = -72.0f;
+	KeyFrame[17].rotRodIzq = 36.0f;
+	KeyFrame[17].giroMonito = -90.0f;
+
+	KeyFrame[18].posX = 221.0f;
+	KeyFrame[18].posY = 0.0f;
+	KeyFrame[18].posZ = 413.0f;
+	KeyFrame[18].movTorzo = -150.0f;
+	KeyFrame[18].movBrazoIzq = -6.0f;
+	KeyFrame[18].rotRodIzq = -25.0f;
+	KeyFrame[18].giroMonito = -90.0f;
+
+	KeyFrame[19].posX = 161.0f;
+	KeyFrame[19].posY = 0.0f;
+	KeyFrame[19].posZ = 395.0f;
+	KeyFrame[19].movTorzo = -160.0f;
+	KeyFrame[19].movBrazoIzq = 45.0f;
+	KeyFrame[19].rotRodIzq = 20.0f;
+	KeyFrame[19].giroMonito = -130.0f;
+
+	KeyFrame[20].posX = 83.0f;
+	KeyFrame[20].posY = 0.0f;
+	KeyFrame[20].posZ = 333.0f;
+	KeyFrame[20].movTorzo = -180.0f;
+	KeyFrame[20].movBrazoIzq = 87.0f;
+	KeyFrame[20].rotRodIzq = -41.0f;
+	KeyFrame[20].giroMonito = -130.0f;
+
+	KeyFrame[21].posX = 21.0f;
+	KeyFrame[21].posY = 0.0f;
+	KeyFrame[21].posZ = 271.0f;
+	KeyFrame[21].movTorzo = -180.0f;
+	KeyFrame[21].movBrazoIzq = -27.0f;
+	KeyFrame[21].rotRodIzq = 15.0f;
+	KeyFrame[21].giroMonito = -130.0f;
+
+	KeyFrame[22].posX = 21.0f;
+	KeyFrame[22].posY = 0.0f;
+	KeyFrame[22].posZ = 271.0f;
+	KeyFrame[22].movTorzo = -180.0f;
+	KeyFrame[22].movBrazoIzq = -27.0f;
+	KeyFrame[22].rotRodIzq = 15.0f;
+	KeyFrame[22].giroMonito = -130.0f;
+
+
+	//While -------------------------------------------------------------------------------------------------------------------------
 	while (!glfwWindowShouldClose(window)){
 		skyboxShader.setInt("skybox", 0);
 		lastFrame = SDL_GetTicks();
 		animate();
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//Luces -------------------------------------------------------------------------------------------------------------------------
 		staticShader.use();
 		staticShader.setVec3("viewPos", camera.Position); 
 		staticShader.setVec3("dirLight.direction", glm::vec3(0.0f, 0.0f, 0.0f));
@@ -543,22 +727,29 @@ int main()
 		animShader.setVec3("light.direction", glm::vec3(0.0f, 0.0f, 0.0f));
 		animShader.setVec3("viewPos", camera.Position);
 
-		// Escenario
-		// -------------------------------------------------------------------------------------------------------------------------
+		//Escenario -------------------------------------------------------------------------------------------------------------------------
 		staticShader.use();
 		staticShader.setMat4("projection", projection);
 		staticShader.setMat4("view", view);
-		
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.15f));
-		staticShader.setMat4("model", model);
-		pino.Draw(staticShader);
 		
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.7f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.15f));
 		staticShader.setMat4("model", model);
 		cascaron.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -1.7f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));
+		staticShader.setMat4("model", model);
+		escalera.Draw(staticShader);
+
 		/*
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));
+		staticShader.setMat4("model", model);
+		pino.Draw(staticShader);
+		
+		
+		
 		// Carro
 		model = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::translate(model, glm::vec3(movAuto_x, movAuto_y, movAuto_z));
@@ -592,47 +783,72 @@ int main()
 		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 		staticShader.setMat4("model", model);
 		llanta.Draw(staticShader);	//Izq trase
-		
+		*/
+
 		//Stewie
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 200, 0));
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-90.0f, 40.0f, -4.0f));
+		model = glm::scale(model, glm::vec3(0.2f));
 		model = glm::translate(model, glm::vec3(posX, movTorzo, posZ));
 		tmp = model = glm::rotate(model, glm::radians(giroMonito), glm::vec3(0.0f, 1.0f, 0.0));
 		staticShader.setMat4("model", model);
-		torso.Draw(staticShader);
-		//Pierna Der
+		torso.Draw(staticShader);//Torso
 		model = glm::translate(tmp, glm::vec3(-0.5f, 0.0f, -0.1f));
 		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0));
 		model = glm::rotate(model, glm::radians(-rotRodIzq), glm::vec3(1.0f, 0.0f, 0.0f));
 		staticShader.setMat4("model", model);
-		piernaDer.Draw(staticShader);
-		//Pierna Izq
+		piernaDer.Draw(staticShader);//Pierna Der
 		model = glm::translate(tmp, glm::vec3(0.5f, 0.0f, -0.1f));
 		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(rotRodIzq), glm::vec3(1.0f, 0.0f, 0.0f));
 		staticShader.setMat4("model", model);
-		piernaIzq.Draw(staticShader);
-		//Brazo derecho
+		piernaIzq.Draw(staticShader);//Pierna Izq
 		model = glm::translate(tmp, glm::vec3(0.0f, -1.0f, 0.0f));
 		model = glm::translate(model, glm::vec3(-0.75f, 2.5f, 0));
 		model = glm::rotate(model, glm::radians(-movBrazoIzq), glm::vec3(1.0f, 0.0f, 0.0f));
 		staticShader.setMat4("model", model);
-		brazoDer.Draw(staticShader);
-		//Brazo izquierdo
+		brazoDer.Draw(staticShader);//Brazo derecho
 		model = glm::translate(tmp, glm::vec3(0.0f, -1.0f, 0.0f));
 		model = glm::translate(model, glm::vec3(0.75f, 2.5f, 0));
 		model = glm::rotate(model, glm::radians(movBrazoIzq), glm::vec3(1.0f, 0.0f, 0.0f));
 		staticShader.setMat4("model", model);
-		brazoIzq.Draw(staticShader);
-		*/
+		brazoIzq.Draw(staticShader);//Brazo izquierdo 
+
+		//Brian
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-75.0f, 45.0f, -3.0f));
+		model = glm::scale(model, glm::vec3(0.2f));
+		model = glm::translate(model, glm::vec3(posX2, movTorzo, posZ));
+		tmp = model = glm::rotate(model, glm::radians(giroMonito), glm::vec3(0.0f, 1.0f, 0.0));
+		staticShader.setMat4("model", model);
+		torso2.Draw(staticShader);//Torso
+		model = glm::translate(tmp, glm::vec3(-0.5f, 0.0f, -0.1f));
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0));
+		model = glm::rotate(model, glm::radians(-rotRodIzq), glm::vec3(1.0f, 0.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		piernaDer2.Draw(staticShader);//Pierna Der
+		model = glm::translate(tmp, glm::vec3(0.5f, 0.0f, -0.1f));
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotRodIzq), glm::vec3(1.0f, 0.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		piernaIzq2.Draw(staticShader);//Pierna Izq
+		model = glm::translate(tmp, glm::vec3(0.0f, -1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(-0.75f, 2.5f, 0));
+		model = glm::rotate(model, glm::radians(-movBrazoIzq), glm::vec3(1.0f, 0.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		brazoDer2.Draw(staticShader);//Brazo derecho
+		model = glm::translate(tmp, glm::vec3(0.0f, -1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(0.75f, 2.5f, 0));
+		model = glm::rotate(model, glm::radians(movBrazoIzq), glm::vec3(1.0f, 0.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		brazoIzq2.Draw(staticShader);//Brazo izquierdo 
+
+		//*/
 		//piso
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.2f));
 		staticShader.setMat4("model", model);
 		piso.Draw(staticShader);
-		
-		// Termina Escenario
-		// -------------------------------------------------------------------------------------------------------------------------
+		//Termina Escenario -------------------------------------------------------------------------------------------------------------------------
 
 		// draw skybox as last
 		skyboxShader.use();
@@ -672,26 +888,21 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 		posX--;
 	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
 		posX++;
-	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 		rotRodIzq--;
-	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 		rotRodIzq++;
-	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
-		giroMonito--;
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
-		giroMonito++;
-	
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		movBrazoIzq += 3.0f;
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-		movBrazoIzq -= 3.0f;
+		giroMonito--;
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		giroMonito++;
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-		movCabeza += 2.0f;
-	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-		movCabeza -= 2.0f;
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		movBrazoIzq += 3.0f;
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+		movBrazoIzq -= 3.0f;
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
 		movTorzo += 2.0f;
-	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
 		movTorzo -= 2.0f;
 
 	//Car animation
@@ -711,9 +922,7 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 		if (play == false && (FrameIndex > 1)){
 			std::cout << "Play animation" << std::endl;
 			resetElements();
-			//First Interpolation				
 			interpolation();
-
 			play = true;
 			playIndex = 0;
 			i_curr_steps = 0;
